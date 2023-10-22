@@ -2,17 +2,23 @@
 //dodavanje event-listenera na svaki broj
 
 let container = document.querySelector('.container');
+let numContainer = "";
+let numContainer2 = "";
+let result = 0;
+let operation = ['+', '-', '*', '/'];
 
 main();
+
+let header = document.querySelector('.header');
 
 function main() {
 
     container.innerHTML = `${createHead()}
     <div class="main-container">${createNumbers()}
-    ${createOperationsContainer()}</div>
+    </div>
     `;
     createNumButtons();
-    createOperationButtons();
+    /* createOperationButtons(); */
 }
 
 function createHead() {
@@ -31,17 +37,17 @@ function createNumbers() {
     return text;
 }
 
-function createOperationsContainer() {
+/* function createOperationsContainer() {
     let text = "";
 
     text += `<div class="operationContainer"></div>`;
 
     return text;
-}
+} */
 
 function createNumButtons() {
     let numbersContainer = document.querySelector('.numbersContainer')
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 16; i++) {
         numbersContainer.innerHTML += `<div class="numBox"></div>`
     }
 
@@ -53,30 +59,118 @@ function createNumButtons() {
         if (index == 9) {
             box.innerHTML = 0;
         } else if (index == 10) {
-            box.innerHTML = '.'
+            box.innerHTML = 'C'
+            box.addEventListener('click', clearCalculator);
         } else if (index == 11) {
             box.innerHTML = '=';
+        } else if (index == 12) {
+            box.innerHTML = '/'; 
+        } else if (index == 13) {
+            box.innerHTML = '*'
+        } else if (index == 14) {
+            box.innerHTML = '+'
+        } else if (index == 15) {
+            box.innerHTML = '-'
         }
+    })
 
-        box.addEventListener('click', func)
+    showNum();
+}
+
+function showNum() {
+    let allNumBoxes = document.querySelectorAll('.numBox');
+
+
+    allNumBoxes.forEach(box => {
+        box.addEventListener('click', function click1() {
+        
+            if (this.innerHTML === "C") {
+                clearCalculator();
+            }else {
+                numContainer += this.innerHTML;
+                header.innerHTML += this.innerHTML;
+    
+                if (this.innerHTML === "+" || this.innerHTML === "-" || this.innerHTML === "*" || this.innerHTML === "/") {
+                    header.innerHTML = "";
+                    showNum2();
+                } 
+            }
+
+            
+        })
     })
 }
 
-function createOperationButtons() {
-    let operationContainer = document.querySelector('.operationContainer')
+function showNum2() {
+    let allNumBoxes = document.querySelectorAll('.numBox');
 
-    for (let i = 0; i < 4; i++) {
-        operationContainer.innerHTML += `<div class="operationBox"></div>`
+    allNumBoxes.forEach(box => {
+        box.addEventListener('click', function click2() {
+
+            if (this.innerHTML === "C") {
+                clearCalculator();
+            }else{
+                numContainer2 += this.innerHTML;
+                header.innerText += this.innerHTML.slice(0,-1);
+    
+                if (this.innerHTML === "=") {
+                    header.innerHTML = "";
+                    calculate();
+                }
+            }
+           
+        })
+    })
+}
+
+function calculate() {  
+    
+    if (numContainer === "" || numContainer2 === "") {
+        result = 0;
+    }else{
+        let num2length = numContainer2.length;
+    
+        numContainer = numContainer.slice(0, -num2length);
+    
+        numContainer2 = numContainer2.slice(0, -1); 
+    
+        console.log(numContainer);
+    
+    
+        for (let i = 0; i < operation.length; i++) {
+            if (numContainer[numContainer.length-1] === operation[i]) {
+    
+                switch (operation[i]) {
+                    case '+':
+                        result = Number(numContainer.slice(0, -1)) + Number(numContainer2);
+                        break;
+                    case '-':
+                        result = Number(numContainer.slice(0, -1)) - Number(numContainer2);
+                        break;
+                    case '*':
+                        result = Number(numContainer.slice(0, -1)) * Number(numContainer2);
+                        break;
+                    case '/':
+                        result = Number(numContainer.slice(0, -1)) / Number(numContainer2);
+                        break;
+                    // Dodajte dodatne slučajeve prema potrebi
+                    default:
+                        console.log('Nepodržana operacija: ' + operation[i]);
+                }
+            }
+        } 
+        
+    
+        header.innerHTML = result;
     }
-
-    let allOperationBoxes = document.querySelectorAll('.operationBox');
-
-    let operators = ['+', '-', '*', '/'];
-
-    allOperationBoxes.forEach((box, index) =>{
-    box.innerHTML = operators[index];
-    })
+    
+    
 }
 
 
-
+function clearCalculator() {
+    numContainer = "";
+    numContainer2 = "";
+    result = 0;
+    header.innerHTML = "";
+}
